@@ -12,7 +12,6 @@
 
 #include "Aliases.h"
 
-
 namespace fs = std::filesystem;
 
 struct TorrentFile
@@ -33,6 +32,7 @@ class Torrent
 {
 public:
     explicit Torrent(std::string_view metainfo);
+    explicit Torrent(const fs::path& file);
 
 private:
     /// Announce URL of the tracker

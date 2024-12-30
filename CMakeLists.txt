@@ -8,38 +8,39 @@ include(FetchContent)
 FetchContent_Declare(
         fmt
         GIT_REPOSITORY https://github.com/fmtlib/fmt
-        GIT_TAG        e3ddede6c4ee818825c4e5a6dfa1d384860c27d9) # 11.1.1
-FetchContent_MakeAvailable(fmt)
-
+        GIT_TAG e3ddede6c4ee818825c4e5a6dfa1d384860c27d9)
 FetchContent_Declare(
         rva
         GIT_REPOSITORY https://github.com/codeinred/recursive-variant.git
-        GIT_TAG        main
-)
-FetchContent_MakeAvailable(rva)
-
-include(ExternalProject)
-find_package(Git REQUIRED)
-
-ExternalProject_Add(
+        GIT_TAG main)
+FetchContent_Declare(
         doctest
-        PREFIX ${CMAKE_BINARY_DIR}/doctest
         GIT_REPOSITORY https://github.com/doctest/doctest.git
-        TIMEOUT 10
-        UPDATE_COMMAND ${GIT_EXECUTABLE} pull
-        CONFIGURE_COMMAND ""
-        BUILD_COMMAND ""
-        INSTALL_COMMAND ""
-        LOG_DOWNLOAD ON
+        GIT_TAG v2.4.11)
+FetchContent_MakeAvailable(fmt)
+FetchContent_MakeAvailable(rva)
+FetchContent_MakeAvailable(doctest)
+
+
+set(SOURCE_FILES
+        src/Bencode.cpp
+        src/Torrent.cpp
 )
 
-ExternalProject_Get_Property(doctest source_dir)
-set(DOCTEST_INCLUDE_DIR ${source_dir}/doctest CACHE INTERNAL "Path to include folder for doctest")
+add_compile_options(-fsanitize=address,undefined)
+add_link_options(-fsanitize=address,undefined)
 
+include_directories(include)
 
-add_executable(bt main.cpp Bencode.cpp Torrent.cpp)
+add_executable(bt
+        src/main.cpp
+        ${SOURCE_FILES}
+)
 target_link_libraries(bt PRIVATE fmt::fmt rva::rva)
 
-add_executable(test test.cpp Bencode.cpp Torrent.cpp)
+add_executable(test
+        tests/test.cpp
+        ${SOURCE_FILES}
+)
 target_link_libraries(test PRIVATE fmt::fmt rva::rva)
-target_include_directories(test PUBLIC ${DOCTEST_INCLUDE_DIR})
+target_include_directories(test PRIVATE ${doctest_SOURCE_DIR}/doctest)

@@ -3,9 +3,27 @@
 #include "Torrent.h"
 #include "Bencode.h"
 
+Torrent::Torrent(const fs::path& file)
+{
+    if (!exists(file))
+        throw std::runtime_error(fmt::format("File {} does not exist", file.string()));
+    if (!is_regular_file(file))
+        throw std::runtime_error(fmt::format("File {} is not a regular file", file.string()));
+    if (file.extension() != ".torrent")
+        throw std::runtime_error(fmt::format("File {} is not a .torrent file", file.string()));
+    std::ifstream in(file);
+    if (!in)
+        throw std::runtime_error(fmt::format("Failed to open file {}", file.string()));
+    const auto size = file_size(file);
+    std::string torrent_file(size, '\0');
+    in.read(torrent_file.data(), static_cast<std::streamsize>(size));
+    in.close();
+    *this = Torrent{std::string_view{torrent_file}};
+}
+
 Torrent::Torrent(const std::string_view metainfo)
 {
-    const auto bencode = Bencode::parse_bencode(metainfo);
+    const auto bencode = Bencode::parse(metainfo);
     const auto dict = rva::get<Bencode::Dict>(bencode);
     announce_ = rva::get<std::string>(dict.at("announce"));
     if (dict.contains("announce-list"))

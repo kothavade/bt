@@ -58,7 +58,7 @@ auto Bencode::parse_inner(const std::string_view data) -> ParseResult
     }
 }
 
-auto Bencode::parse_bencode(const std::string_view data) -> Value
+auto Bencode::parse(const std::string_view data) -> Value
 {
     const auto [bencode, rest] = parse_inner(data);
     if (!rest.empty())
