@@ -3,6 +3,7 @@
 
 #include "Torrent.h"
 
+namespace fs = std::filesystem;
 
 auto main(const int argc, char* argv[]) -> int
 {
@@ -16,7 +17,7 @@ auto main(const int argc, char* argv[]) -> int
 
     try
     {
-        const auto torrent = Torrent{file};
+        const auto torrent = bt::Torrent{file};
         fmt::print("{}\n", torrent);
     } catch (const std::exception& e)
     {

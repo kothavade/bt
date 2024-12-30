@@ -1,6 +1,7 @@
 #include "doctest.h"
-
 #include "Torrent.h"
+
+using namespace bt;
 
 TEST_CASE("Torrent")
 {

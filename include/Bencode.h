@@ -7,24 +7,27 @@
 
 #include "Aliases.h"
 
-class Bencode
+namespace bt
 {
-public:
-    using Value = rva::variant<
-        std::string,
-        i64,
-        std::vector<rva::self_t>,
-        std::map<std::string, rva::self_t>>;
-    using List = std::vector<Value>;
-    using Dict = std::map<std::string, Value>;
-    static auto parse(std::string_view data) -> Value;
-
-private:
-    struct ParseResult
+    class Bencode
     {
-        Value value;
-        std::string_view rest;
-    };
+    public:
+        using Value = rva::variant<
+            std::string,
+            i64,
+            std::vector<rva::self_t>,
+            std::map<std::string, rva::self_t>>;
+        using List = std::vector<Value>;
+        using Dict = std::map<std::string, Value>;
+        static auto parse(std::string_view data) -> Value;
 
-    static auto parse_inner(std::string_view data) -> ParseResult;
-};
+    private:
+        struct ParseResult
+        {
+            Value value;
+            std::string_view rest;
+        };
+
+        static auto parse_inner(std::string_view data) -> ParseResult;
+    };
+}

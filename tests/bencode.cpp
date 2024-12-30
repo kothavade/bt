@@ -1,5 +1,6 @@
 #include "doctest.h"
 #include "Bencode.h"
+using namespace bt;
 using namespace std::literals;
 using Value = Bencode::Value;
 
