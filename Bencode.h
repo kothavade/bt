@@ -1,23 +1,28 @@
 #pragma once
 
+#include <map>
 #include <string>
 #include <vector>
-#include <unordered_map>
-#include <variant>
+#include <rva/variant.hpp>
 
 #include "Aliases.h"
 
-struct Bencode
+class Bencode
 {
-    using List = std::vector<Bencode>;
-    using Dictionary = std::unordered_map<std::string_view, Bencode>;
-    using Value = std::variant<i64, std::string_view, List, Dictionary>;
-    Value value;
-
-    explicit Bencode(Value value) : value(std::move(value))
+public:
+    using Value = rva::variant<
+    std::string,
+    i64,
+    std::vector<rva::self_t>,
+    std::map<std::string, rva::self_t>>;
+    using List = std::vector<Value>;
+    using Dict = std::map<std::string, Value>;
+    static auto parse_bencode(std::string_view data) -> Value;
+private:
+    struct ParseResult
     {
-    }
-
-    explicit Bencode(std::string_view data);
+        Value value;
+        std::string_view rest;
+    };
+    static auto parse_inner(std::string_view data) -> ParseResult;
 };
-

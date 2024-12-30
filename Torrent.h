@@ -18,12 +18,12 @@ namespace fs = std::filesystem;
 struct TorrentFile
 {
     fs::path path;
-    int length;
+    i64 length;
 };
 
 struct MultiFile
 {
-    std::string_view name;
+    std::string name;
     std::vector<TorrentFile> files;
 };
 
@@ -32,23 +32,23 @@ using SHA1 = std::array<std::byte, 20>;
 class Torrent
 {
 public:
-    explicit Torrent(const std::string_view metainfo);
+    explicit Torrent(std::string_view metainfo);
 
 private:
     /// Announce URL of the tracker
-    std::string_view announce_;
+    std::string announce_;
     /// List of lists of URLs, containing a list of tiers of announces
-    std::optional<std::vector<std::vector<std::string_view>>> announce_list_;
+    std::optional<std::vector<std::vector<std::string>>> announce_list_;
     /// The creation time of the torrent
     std::optional<std::chrono::time_point<std::chrono::system_clock>> creation_date_;
     /// Free-form textual comments of the author
-    std::optional<std::string_view> comment_;
+    std::optional<std::string> comment_;
     /// Name and version of the program used to create the .torrent
-    std::optional<std::string_view> created_by_;
+    std::optional<std::string> created_by_;
     /// The string encoding format used to generate the pieces
-    std::optional<std::string_view> encoding_;
+    std::optional<std::string> encoding_;
     /// Number of bytes in each piece
-    u32 piece_length_;
+    i64 piece_length_;
     /// SHA-1 hash values for each piece
     std::vector<SHA1> pieces_;
     /// In single-file mode, the file to save to.
@@ -70,7 +70,7 @@ struct fmt::formatter<Torrent>
         return ctx.begin();
     }
 
-    auto format(const Torrent& t, format_context& ctx) const
+    static auto format(const Torrent& t, const format_context& ctx)
     {
         auto out = ctx.out();
 
@@ -83,7 +83,22 @@ struct fmt::formatter<Torrent>
         // Format optional fields
         if (t.announce_list_)
         {
-            out = format_to(out, "Announce List: {}\n", join(*t.announce_list_, ", "));
+            out = format_to(out, "Announce List:\n");
+            for (const auto& tier : *t.announce_list_)
+            {
+                // TODO: fix fmt::join
+                // out = format_to(out, " {}\n", join(tier, ", "));
+                out = format_to(out, "  [");
+                for (const auto& url : tier)
+                {
+                    out = format_to(out, "{}", url);
+                    if (&url != &tier.back())
+                    {
+                        out = format_to(out, ", ");
+                    }
+                }
+                out = format_to(out, "]\n");
+            }
         }
         if (t.creation_date_)
         {

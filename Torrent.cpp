@@ -5,42 +5,42 @@
 
 Torrent::Torrent(const std::string_view metainfo)
 {
-    const auto bencode = Bencode{metainfo};
-    const auto dict = std::get<Bencode::Dictionary>(bencode.value);
-    announce_ = std::get<std::string_view>(dict.at("announce").value);
+    const auto bencode = Bencode::parse_bencode(metainfo);
+    const auto dict = rva::get<Bencode::Dict>(bencode);
+    announce_ = rva::get<std::string>(dict.at("announce"));
     if (dict.contains("announce-list"))
     {
-        const auto& announce_list = std::get<Bencode::List>(dict.at("announce-list").value);
-        std::vector<std::vector<std::string_view>> list;
+        const auto& announce_list = rva::get<Bencode::List>(dict.at("announce-list"));
+        std::vector<std::vector<std::string>> list;
         list.reserve(announce_list.size());
         for (const auto& tier_bc : announce_list)
         {
-            const auto& tier = std::get<Bencode::List>(tier_bc.value);
-            std::vector<std::string_view> tier_list;
+            const auto& tier = rva::get<Bencode::List>(tier_bc);
+            std::vector<std::string> tier_list;
             tier_list.reserve(tier.size());
             for (const auto& url : tier)
-                tier_list.push_back(std::get<std::string_view>(url.value));
+                tier_list.push_back(rva::get<std::string>(url));
             list.push_back(tier_list);
         }
         announce_list_ = list;
     }
     if (dict.contains("creation date"))
     {
-        const auto date = std::get<i64>(dict.at("creation date").value);
+        const auto date = rva::get<i64>(dict.at("creation date"));
         creation_date_ = std::chrono::system_clock::time_point{std::chrono::seconds{date}};
     }
     if (dict.contains("comment"))
-        comment_ = std::get<std::string_view>(dict.at("comment").value);
+        comment_ = rva::get<std::string>(dict.at("comment"));
     if (dict.contains("created by"))
-        created_by_ = std::get<std::string_view>(dict.at("created by").value);
+        created_by_ = rva::get<std::string>(dict.at("created by"));
     if (dict.contains("encoding"))
-        encoding_ = std::get<std::string_view>(dict.at("encoding").value);
+        encoding_ = rva::get<std::string>(dict.at("encoding"));
 
-    const auto info = std::get<Bencode::Dictionary>(dict.at("info").value);
+    const auto info = rva::get<Bencode::Dict>(dict.at("info"));
 
-    piece_length_ = std::get<i64>(info.at("piece length").value);
+    piece_length_ = rva::get<i64>(info.at("piece length"));
 
-    const auto pieces = std::get<std::string_view>(info.at("pieces").value);
+    const auto pieces = rva::get<std::string>(info.at("pieces"));
     if (pieces.size() % 20 != 0)
         throw std::runtime_error(fmt::format("Invalid pieces length: {}", pieces.size()));
     pieces_.reserve(pieces.size() / 20);
@@ -53,16 +53,16 @@ Torrent::Torrent(const std::string_view metainfo)
 
     if (info.contains("files"))
     {
-        const auto& files = std::get<Bencode::List>(info.at("files").value);
+        const auto& files = rva::get<Bencode::List>(info.at("files"));
         MultiFile multi_file;
-        multi_file.name = std::get<std::string_view>(info.at("name").value);
+        multi_file.name = rva::get<std::string>(info.at("name"));
         for (const auto& file_bc : files)
         {
-            const auto& file = std::get<Bencode::Dictionary>(file_bc.value);
+            const auto& file = rva::get<Bencode::Dict>(file_bc);
             TorrentFile torrent_file;
-            torrent_file.length = std::get<i64>(file.at("length").value);
-            for (const auto& path = std::get<Bencode::List>(file.at("path").value); const auto& part : path)
-                torrent_file.path /= std::get<std::string_view>(part.value);
+            torrent_file.length = rva::get<i64>(file.at("length"));
+            for (const auto& path = rva::get<Bencode::List>(file.at("path")); const auto& part : path)
+                torrent_file.path /= rva::get<std::string>(part);
             multi_file.files.push_back(torrent_file);
         }
         file_info_ = multi_file;
@@ -70,8 +70,8 @@ Torrent::Torrent(const std::string_view metainfo)
     else
     {
         TorrentFile torrent_file;
-        torrent_file.length = std::get<i64>(info.at("length").value);
-        torrent_file.path = std::get<std::string_view>(info.at("name").value);
+        torrent_file.length = rva::get<i64>(info.at("length"));
+        torrent_file.path = rva::get<std::string>(info.at("name"));
         file_info_ = torrent_file;
     }
 }
