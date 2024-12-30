@@ -6,6 +6,7 @@
 #include <optional>
 #include <chrono>
 #include <filesystem>
+#include <SHA1.h>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <fmt/std.h>
@@ -28,7 +29,7 @@ namespace bt
         std::vector<TorrentFile> files;
     };
 
-    using SHA1 = std::array<std::byte, 20>;
+    using Hash = std::string;
 
     class Torrent
     {
@@ -37,6 +38,8 @@ namespace bt
         explicit Torrent(const fs::path& file);
 
     private:
+        /// SHA1 hash of the bencoded info key
+        Hash info_hash_;
         /// Announce URL of the tracker
         std::string announce_;
         /// List of lists of URLs, containing a list of tiers of announces
@@ -52,7 +55,7 @@ namespace bt
         /// Number of bytes in each piece
         i64 piece_length_;
         /// SHA-1 hash values for each piece
-        std::vector<SHA1> pieces_;
+        std::vector<Hash> pieces_;
         /// In single-file mode, the file to save to.
         /// In multiple-file mode, a list of files with paths and lengths.
         std::variant<TorrentFile, MultiFile> file_info_;
@@ -78,6 +81,7 @@ struct fmt::formatter<bt::Torrent>
 
         // Format required fields
         out = format_to(out, "Torrent{{\n");
+        out = format_to(out, "Info Hash: {}\n", t.info_hash_);
         out = format_to(out, "Announce: {}\n", t.announce_);
         out = format_to(out, "Piece Length: {} bytes\n", t.piece_length_);
         out = format_to(out, "Pieces: {} SHA1 hashes\n", t.pieces_.size());

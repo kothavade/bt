@@ -2,6 +2,7 @@
 
 #include "Torrent.h"
 #include "Bencode.h"
+#include "SHA1.h"
 
 namespace bt
 {
@@ -64,11 +65,11 @@ namespace bt
         if (pieces.size() % 20 != 0)
             throw std::runtime_error(fmt::format("Invalid pieces length: {}", pieces.size()));
         pieces_.reserve(pieces.size() / 20);
-        for (size_t i = 0; i < pieces.size(); i += 20)
+        for (ssize_t i = 0; i < pieces.size(); i += 20)
         {
-            SHA1 sha1;
-            std::memcpy(sha1.data(), pieces.data() + i, 20);
-            pieces_.push_back(sha1);
+            Hash hash;
+            std::copy_n(pieces.begin() + i, 20, hash.begin());
+            pieces_.push_back(hash);
         }
 
         if (info.contains("files"))
@@ -94,5 +95,10 @@ namespace bt
             torrent_file.path = rva::get<std::string>(info.at("name"));
             file_info_ = torrent_file;
         }
+
+        std::string serialized_info = Bencode::encode(info);
+        SHA1 sha1;
+        sha1.update(serialized_info);
+        info_hash_ = sha1.final();
     }
 }

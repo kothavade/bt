@@ -20,6 +20,7 @@ namespace bt
         using List = std::vector<Value>;
         using Dict = std::map<std::string, Value>;
         static auto parse(std::string_view data) -> Value;
+        static auto encode(const Value& value) -> std::string;
 
     private:
         struct ParseResult
