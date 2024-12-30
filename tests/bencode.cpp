@@ -7,7 +7,7 @@ using Value = Bencode::Value;
 template <typename T>
 void check_bc(const std::string& s, const T& expected)
 {
-    auto v = Bencode::parse(s);
+    auto v = Bencode::decode(s);
     CHECK_EQ(rva::get<T>(v), expected);
 }
 

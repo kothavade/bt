@@ -26,7 +26,7 @@ namespace bt
 
     Torrent::Torrent(const std::string_view metainfo)
     {
-        const auto bencode = Bencode::parse(metainfo);
+        const auto bencode = Bencode::decode(metainfo);
         const auto dict = rva::get<Bencode::Dict>(bencode);
         announce_ = rva::get<std::string>(dict.at("announce"));
         if (dict.contains("announce-list"))

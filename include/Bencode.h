@@ -19,7 +19,7 @@ namespace bt
             std::map<std::string, rva::self_t>>;
         using List = std::vector<Value>;
         using Dict = std::map<std::string, Value>;
-        static auto parse(std::string_view data) -> Value;
+        static auto decode(std::string_view data) -> Value;
         static auto encode(const Value& value) -> std::string;
 
     private:
@@ -29,6 +29,6 @@ namespace bt
             std::string_view rest;
         };
 
-        static auto parse_inner(std::string_view data) -> ParseResult;
+        static auto decode_inner(std::string_view data) -> ParseResult;
     };
 }

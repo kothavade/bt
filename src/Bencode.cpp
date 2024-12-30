@@ -6,7 +6,7 @@
 namespace bt
 {
     // TODO: iterative
-    auto Bencode::parse_inner(const std::string_view data) -> ParseResult
+    auto Bencode::decode_inner(const std::string_view data) -> ParseResult
     {
         if (data.empty())
             throw std::runtime_error("Expected data, got empty string");
@@ -27,7 +27,7 @@ namespace bt
                 auto rest = data.substr(1);
                 while (rest[0] != 'e')
                 {
-                    const auto& [bencode, new_rest] = parse_inner(rest);
+                    const auto& [bencode, new_rest] = decode_inner(rest);
                     list.push_back(bencode);
                     rest = new_rest;
                 }
@@ -39,8 +39,8 @@ namespace bt
                 auto rest = data.substr(1);
                 while (rest[0] != 'e')
                 {
-                    const auto& [key, key_rest] = parse_inner(rest);
-                    const auto& [value, value_rest] = parse_inner(key_rest);
+                    const auto& [key, key_rest] = decode_inner(rest);
+                    const auto& [value, value_rest] = decode_inner(key_rest);
                     const auto key_str = rva::get<std::string>(key);
                     dict.emplace(key_str, value);
                     rest = value_rest;
@@ -61,9 +61,9 @@ namespace bt
         }
     }
 
-    auto Bencode::parse(const std::string_view data) -> Value
+    auto Bencode::decode(const std::string_view data) -> Value
     {
-        const auto [bencode, rest] = parse_inner(data);
+        const auto [bencode, rest] = decode_inner(data);
         if (!rest.empty())
             throw std::runtime_error(fmt::format("Expected end of data, got {}", rest));
         return bencode;
