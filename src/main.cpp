@@ -19,7 +19,8 @@ auto main(const int argc, char* argv[]) -> int
     {
         const auto torrent = bt::Torrent{file};
         fmt::print("{}\n", torrent);
-    } catch (const std::exception& e)
+    }
+    catch (const std::exception& e)
     {
         fmt::print(stderr, "Error: {}\n", e.what());
         return 1;

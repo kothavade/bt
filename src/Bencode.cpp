@@ -47,7 +47,7 @@ namespace bt
                 }
                 return {Value{dict}, rest.substr(1)};
             }
-            // String
+        // String
         default:
             {
                 const auto pos = data.find(':');
@@ -72,7 +72,8 @@ namespace bt
     auto Bencode::encode(const Value& value) -> std::string
     {
         std::ostringstream result;
-        rva::visit([&result](const auto& v) {
+        rva::visit([&result](const auto& v)
+        {
             using T = std::decay_t<decltype(v)>;
             if constexpr (std::is_same_v<T, std::string>)
             {
