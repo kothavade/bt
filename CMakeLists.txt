@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.30)
-project(bt)
+project(Typhoon)
 
 set(CMAKE_CXX_STANDARD 20)
-
 
 set(SOURCE_FILES
         src/Bencode.cpp
@@ -27,11 +26,11 @@ find_package(doctest CONFIG REQUIRED)
 find_package(asio CONFIG REQUIRED)
 find_package(ada CONFIG REQUIRED)
 
-add_executable(bt
+add_executable(typhoon
         src/main.cpp
         ${SOURCE_FILES}
 )
-target_link_libraries(bt PRIVATE fmt::fmt rva::rva asio::asio ada::ada)
+target_link_libraries(typhoon PRIVATE fmt::fmt rva::rva asio::asio ada::ada)
 
 add_executable(test
         tests/test.cpp
