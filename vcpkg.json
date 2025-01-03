@@ -1,0 +1,15 @@
+{
+  "dependencies" : [ {
+    "name" : "fmt",
+    "version>=" : "11.0.2#1"
+  }, {
+    "name" : "doctest",
+    "version>=" : "2.4.11"
+  }, {
+    "name" : "asio",
+    "version>=" : "1.32.0"
+  }, {
+    "name" : "ada-url",
+    "version>=" : "2.9.2"
+  } ]
+}

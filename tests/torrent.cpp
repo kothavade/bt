@@ -1,10 +1,10 @@
-#include "doctest.h"
 #include "Torrent.h"
 
-using namespace bt;
+#include "doctest.h"
 
-TEST_CASE("Torrent")
-{
-    for (const auto& entry : fs::directory_iterator{"../examples"})
-        CHECK_NOTHROW(Torrent{entry.path()});
+using namespace Typhoon;
+
+TEST_CASE("Torrent") {
+    for (const auto &entry : fs::directory_iterator{"../examples"})
+        CHECK_NOTHROW(Torrent::from_file(entry.path()));
 }
