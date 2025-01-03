@@ -3,3 +3,5 @@ IndentWidth: 4
 UseTab: Never
 ColumnLimit: 100
 FixNamespaceComments: false # Clion does it better
+AllowShortLoopsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false

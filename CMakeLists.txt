@@ -3,22 +3,6 @@ project(bt)
 
 set(CMAKE_CXX_STANDARD 20)
 
-include(FetchContent)
-
-FetchContent_Declare(
-        rva
-        GIT_REPOSITORY https://github.com/codeinred/recursive-variant.git
-        GIT_TAG main)
-FetchContent_MakeAvailable(rva)
-# FetchContent_Declare(
-#         doctest
-#         GIT_REPOSITORY https://github.com/doctest/doctest.git
-#         GIT_TAG v2.4.11)
-# FetchContent_MakeAvailable(doctest)
-# find_package(PkgConfig REQUIRED)
-# pkg_check_modules(fmt REQUIRED IMPORTED_TARGET fmt)
-
-
 
 set(SOURCE_FILES
         src/Bencode.cpp
@@ -31,6 +15,13 @@ add_link_options(-fsanitize=address,undefined)
 
 include_directories(include)
 
+
+include(FetchContent)
+FetchContent_Declare(
+        rva
+        GIT_REPOSITORY https://github.com/codeinred/recursive-variant.git
+        GIT_TAG main)
+FetchContent_MakeAvailable(rva)
 find_package(fmt CONFIG REQUIRED)
 find_package(doctest CONFIG REQUIRED)
 find_package(asio CONFIG REQUIRED)

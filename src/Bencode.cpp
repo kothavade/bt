@@ -7,7 +7,8 @@
 namespace Typhoon {
 // TODO: iterative
 auto Bencode::decode_inner(const std::string_view data) -> ParseResult {
-    if (data.empty()) throw std::runtime_error("Expected data, got empty string");
+    if (data.empty())
+        throw std::runtime_error("Expected data, got empty string");
 
     switch (data[0]) {
         case 'i': {
@@ -55,7 +56,8 @@ auto Bencode::decode_inner(const std::string_view data) -> ParseResult {
 
 auto Bencode::decode(const std::string_view data) -> Value {
     const auto [bencode, rest] = decode_inner(data);
-    if (!rest.empty()) throw std::runtime_error(fmt::format("Expected end of data, got {}", rest));
+    if (!rest.empty())
+        throw std::runtime_error(fmt::format("Expected end of data, got {}", rest));
     return bencode;
 }
 
@@ -70,7 +72,8 @@ auto Bencode::encode(const Value &value) -> std::string {
                 result << 'i' << v << 'e';
             } else if constexpr (std::is_same_v<T, List>) {
                 result << 'l';
-                for (const auto &item : v) result << encode(item);
+                for (const auto &item : v)
+                    result << encode(item);
                 result << 'e';
             } else if constexpr (std::is_same_v<T, Dict>) {
                 result << 'd';
@@ -83,4 +86,4 @@ auto Bencode::encode(const Value &value) -> std::string {
         value);
     return result.str();
 }
-}  // namespace bt
+}

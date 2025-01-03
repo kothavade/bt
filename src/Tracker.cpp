@@ -57,7 +57,8 @@ auto HttpTracker::announce(const Torrent &torrent, bool compact) -> asio::awaita
         fmt::println(stderr, "Tracker warning: {}",
                      rva::get<std::string>(decoded_dict.at("warning message")));
 
-    if (!decoded_dict.contains("peers")) throw std::runtime_error("Tracker response missing peers");
+    if (!decoded_dict.contains("peers"))
+        throw std::runtime_error("Tracker response missing peers");
 
     auto response = Response{};
     response.interval = rva::get<i64>(decoded_dict.at("interval"));
@@ -157,8 +158,9 @@ asio::awaitable<HttpTracker::HttpResponse> HttpTracker::make_http_request(
         http_response.body += ss.str();
     }
 
-    if (ec && ec != asio::error::eof) throw std::system_error(ec);
+    if (ec && ec != asio::error::eof)
+        throw std::system_error(ec);
 
     co_return http_response;
 }
-}  // namespace bt
+}

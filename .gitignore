@@ -1,3 +1,5 @@
 /cmake-build-debug/
 /build/
 /.cache/
+/examples/*
+!/examples/*.torrent

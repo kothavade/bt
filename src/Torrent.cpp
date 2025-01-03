@@ -14,7 +14,8 @@ auto Torrent::from_file(const fs::path &file) -> Torrent {
     if (file.extension() != ".torrent")
         throw std::runtime_error(fmt::format("File {} is not a .torrent file", file.string()));
     std::ifstream in(file);
-    if (!in) throw std::runtime_error(fmt::format("Failed to open file {}", file.string()));
+    if (!in)
+        throw std::runtime_error(fmt::format("Failed to open file {}", file.string()));
     const auto size = file_size(file);
     std::string torrent_file(size, '\0');
     in.read(torrent_file.data(), static_cast<std::streamsize>(size));
@@ -44,9 +45,9 @@ Torrent::Torrent(const std::string_view metainfo) {
         const auto date = rva::get<i64>(dict.at("creation date"));
         creation_date_ = std::chrono::system_clock::time_point{std::chrono::seconds{date}};
     }
-    if (dict.contains("comment")) comment_ = rva::get<std::string>(dict.at("comment"));
-    if (dict.contains("created by")) created_by_ = rva::get<std::string>(dict.at("created by"));
-    if (dict.contains("encoding")) encoding_ = rva::get<std::string>(dict.at("encoding"));
+    if (dict.contains("comment"))       comment_    = rva::get<std::string>(dict.at("comment"));
+    if (dict.contains("created by"))    created_by_ = rva::get<std::string>(dict.at("created by"));
+    if (dict.contains("encoding"))      encoding_   = rva::get<std::string>(dict.at("encoding"));
 
     const auto info = rva::get<Bencode::Dict>(dict.at("info"));
 
@@ -56,12 +57,8 @@ Torrent::Torrent(const std::string_view metainfo) {
     if (pieces.size() % 20 != 0)
         throw std::runtime_error(fmt::format("Invalid pieces length: {}", pieces.size()));
     pieces_.reserve(pieces.size() / 20);
-    for (ssize_t i = 0; i < pieces.size(); i += 20) {
-        // SHA1::Hash hash;
-        // // std::copy_n(pieces.begin() + i, 20, hash.begin());
-        // std::memcpy(hash.data(), pieces.data() + i, 20);
+    for (ssize_t i = 0; i < pieces.size(); i += 20)
         pieces_.emplace_back(pieces.substr(i, 20));
-    }
 
     if (info.contains("files")) {
         const auto &files = rva::get<Bencode::List>(info.at("files"));
@@ -89,4 +86,4 @@ Torrent::Torrent(const std::string_view metainfo) {
     sha1.update(serialized_info);
     info_hash_ = sha1.final();
 }
-}  // namespace bt
+}
